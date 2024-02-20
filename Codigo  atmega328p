@@ -40,4 +40,80 @@
 
         ldi temp, 0x05
         out TCCR0B, temp
+;
+selection:
+        in r16, PINB
+        cpi r16, 0x00
+        brew Start
 
+        in r16, PINB
+        cpi r16, 0x01
+        breq Start1
+
+        in r16, PINB
+        cpi r16, 0x02
+        breq Start2
+
+        in r16, PINB
+        cpi r16, 0x03
+        breq Start3
+        rjump selection
+
+; 1hz
+; (15625 * 1) / 250
+Start:
+        sbi PORTB, PB5
+        call Dellay
+        cbi PORTB, PB5
+        call Delay
+        rjump selection
+
+Delay:
+        ldi counter,0
+        out TCNT0,counter
+        ldi repeat,0;
+loop:
+        in counter,TCNT0
+        cpi counter,250
+        brne loop
+        ldi counter,0
+        out TCNT0,counter
+        inc repeat
+        cpi repeat,62
+        brne loop
+        ret
+
+; 2.5hz
+; (15625 * 0.4) / 250
+Start1:
+        sbi PORTB, PB5
+        call Delay1
+        cbi PORTB, PB5
+        call Delay1
+        rjump selection
+
+Delay1:
+        ldi counter1,0
+        out TCNT0,counter
+        ldi repeat1,0;
+loop1:
+        in counter1,TCNT0
+        cpi counter1,250
+        brne loop1
+        ldi counter1,0
+        out TCNT0,counter1
+        inc repeat1
+        cpi repeat1,25
+        brne loop1
+        ret
+
+; 50hz
+; (15625 * 0.02) / 250
+Start2:
+        sbi PORTB, PB5
+        call Delay2
+        cbi PORTB, PB5
+        call Delay2
+        rjump selection
+
+Delay2:
